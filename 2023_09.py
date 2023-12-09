@@ -6,16 +6,16 @@ def recur(s):
         return 0
     diff = s[1:] - s[:-1]
     return recur(diff) + diff[-1]
+
 def solver_a(data, reverse=False):
     data_split = data.split('\n')
 
     sum = 0
     for d in data_split:
         sequence = np.array([int(n) for n in d.split(' ')], dtype=int)
-        if reverse:
+        if reverse: # magic
             sequence = sequence[::-1]
-        s = recur(sequence) + sequence[-1]
-        sum += s
+        sum += recur(sequence) + sequence[-1]
     print(sum)
 
 if __name__ == '__main__':
