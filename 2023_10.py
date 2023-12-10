@@ -1,45 +1,27 @@
 from aocd.models import Puzzle
 import numpy as np
 import matplotlib.pyplot as plt
-from skimage.segmentation import flood, flood_fill
-
+from skimage.segmentation import flood_fill
 
 def navigator(direction, y_pos, x_pos, lines):
-    # -, 7, J
     c = lines[y_pos][x_pos]
-    if direction == 'right':
-        if c == '-':
-            return 'right', y_pos, x_pos + 1
-        elif c == '7':
-            return 'down', y_pos + 1, x_pos
-        elif c == 'J':
-            return 'up', y_pos - 1, x_pos
-    # -, F, L
-    elif direction == 'left':
-        if c == '-':
-            return 'left', y_pos, x_pos -1
-        elif c == 'F':
-            return 'down', y_pos + 1, x_pos
-        elif c == 'L':
-            return 'up', y_pos - 1, x_pos
-    # |, F, 7
-    elif direction == 'up':
-        if c == '|':
-            return 'up', y_pos - 1, x_pos
-        elif c == 'F':
-            return 'right', y_pos, x_pos + 1
-        elif c == '7':
-            return 'left', y_pos, x_pos - 1
-    # |, L, J
-    else: # down
-        if c == '|':
-            return 'down', y_pos + 1, x_pos
-        elif c == 'L':
-            return 'right', y_pos, x_pos + 1
-        elif c == 'J':
-            return 'left', y_pos, x_pos - 1
+    r = {
+        ('right', '-'): ('right', y_pos, x_pos + 1),
+        ('right', '7'): ('down', y_pos + 1, x_pos),
+        ('right', 'J'): ('up', y_pos - 1, x_pos),
+        ('left', '-'): ('left', y_pos, x_pos -1),
+        ('left', 'F'): ('down', y_pos + 1, x_pos),
+        ('left', 'L'): ('up', y_pos - 1, x_pos),
+        ('up', '|'): ('up', y_pos - 1, x_pos),
+        ('up', 'F'): ('right', y_pos, x_pos + 1),
+        ('up', '7'): ('left', y_pos, x_pos - 1),
+        ('down', '|'): ('down', y_pos + 1, x_pos),
+        ('down', 'L'): ('right', y_pos, x_pos + 1),
+        ('down', 'J'): ('left', y_pos, x_pos - 1),
+    }
+    if (direction, c) in r:
+        return r[(direction, c)]
     return None, None, None
-
 
 def solver_a(data, reverse=False):
     lines = data.split('\n')
@@ -49,8 +31,6 @@ def solver_a(data, reverse=False):
         if x_pos != -1:
             y_pos = idx
             break
-    assert y_pos is not None
-    assert x_pos is not None
 
     mapa = np.zeros([len(lines), len(lines[0])], dtype=int)
     mapa[y_pos, x_pos] = 1
@@ -112,9 +92,6 @@ def solver_b(data):
     plt.imshow(filled)
     plt.show()
     print(np.sum(filled==0))
-
-
-
 
 if __name__ == '__main__':
     puzzle = Puzzle(year=2023, day=10)
